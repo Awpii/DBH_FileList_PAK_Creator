@@ -1,30 +1,31 @@
 import os
 
+#working dir shit
 working_dir = "C:/Unpacked"
-output_file = os.pat.join(working_dir, "FileList.txt")
+output_file = "C:/Unpacked/FileList.txt"
 
+#scan folder
 folders = ["DriveBeyondHorizon", "Engine"]
 
-if os.path.exist(output_file):
+#clear output file
+if os.path.exists(output_file):
     os.remove(output_file)
     
-
-with open(output_file, 'a', encoding = 'utf-8') as f:
+#Open file in append
+with open(output_file, 'a') as f:
     for folder in folders:
         folder_path = os.path.join(working_dir, folder)
         
         if not os.path.exists(folder_path):
-            print(f" Folder '{folder}' not found! Skipping...")
+            print(f"Warning: Folder '{folder}' not found. Skipping...")
             continue
         
-        for root, dirs, files in os.walk(folder_path):
+        for root, _, files in os.walk(folder_path):
             for file in files:
-                abs_path = os.path.join(root, file)
-                abs_path_fixed = abs_path.replace("\\", "/")
+                absolute_path = os.path.join(root, file).replace("\\", "/")
+                relative_path = os.path.relpath(root, folder_path).replace("\\", "/")
+                virtual_path = f"../../{folder}/{relative_path}/{file}"
                 
-                relative_path = os.path.relpath(abs_path, start = folder_path).replace("\\","/")
-                virtual_path = f"../../../{folder}/{relative_path}" 
-                
-                f.write(f"{abs_path_fixed} {virtual_path}\n")
-                
-print("All files written to FileList.txt")
+                f.write(f"{absolute_path} {virtual_path}\n")
+    
+print("FileList.txt created with all files from the defined folders")
